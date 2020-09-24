@@ -4,8 +4,6 @@ import 'package:node_editor/models/node_model.dart';
 import 'package:node_editor/widgets/node_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../util.dart';
-
 class NodeControl extends StatefulWidget {
   NodeControl({Key key, @required this.nodeModel}) : super(key: key);
 
@@ -53,6 +51,7 @@ class _NodeControlState extends State<NodeControl> {
                 model.nodes.unLink(node, widget.nodeModel);
               }
             }
+            widget.nodeModel.data = data.data;
             model.nodes.unLink(
                 data,
                 model.nodes
