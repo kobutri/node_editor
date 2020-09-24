@@ -14,19 +14,18 @@ class _CanvasTargetState extends State<CanvasTarget> {
   @override
   Widget build(BuildContext context) {
     //print("build canvas target");
-    return DragTarget<NodeModel>(
-      builder: (context, candidates, rejects) {
-        return SizedBox.expand();
-      },
-      onWillAccept: (_) => false,
-      onMove: (details) {
-        NodeModel node = details.data;
-        NodeEditorModel model = Provider.of(context, listen: false);
-        RenderBox box = model.painterKey.currentContext.findRenderObject();
-        Offset pos = box.globalToLocal(
-            details.offset + Offset(node.size.width / 2, node.size.height / 2));
-        model.edges[node.key].endOffset = pos;
-        model.update();
+    return Consumer<NodeEditorModel>(
+      builder: (context, model, _) {
+        return DragTarget<NodeModel>(
+          builder: (context, candidates, rejects) {
+            return SizedBox.expand();
+          },
+          onWillAccept: (_) => false,
+          onMove: (details) {
+            model.updateNodes();
+            model.update();
+          },
+        );
       },
     );
   }

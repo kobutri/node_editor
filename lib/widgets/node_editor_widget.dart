@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:node_editor/models/node_editor_model.dart';
+import 'package:node_editor/models/node_model.dart';
+import 'package:node_editor/widgets/node_control_widget.dart';
 import 'package:provider/provider.dart';
 
 import 'canvas_target_widget.dart';
 import 'node_editor_painter_widget.dart';
-import 'node_end_widget.dart';
-import 'node_start_widget.dart';
 
 class NodeEditor extends StatefulWidget {
   const NodeEditor({Key key}) : super(key: key);
@@ -17,6 +17,10 @@ class NodeEditor extends StatefulWidget {
 class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      afterLayout(context);
+    });
+
     return Consumer<NodeEditorModel>(
       builder: (context, model, _) {
         return InteractiveViewer(
@@ -37,8 +41,8 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
                 alignment: Alignment.topRight,
                 child: Padding(
                   padding: const EdgeInsets.all(128.0),
-                  child: NodeStart(
-                    node: model.sources[0],
+                  child: NodeControl(
+                    nodeModel: model.nodes.elementAt(0),
                   ),
                 ),
               ),
@@ -46,8 +50,8 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
                 alignment: Alignment.bottomRight,
                 child: Padding(
                   padding: const EdgeInsets.all(128.0),
-                  child: NodeStart(
-                    node: model.sources[1],
+                  child: NodeControl(
+                    nodeModel: model.nodes.elementAt(1),
                   ),
                 ),
               ),
@@ -55,8 +59,8 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
                 alignment: Alignment.bottomLeft,
                 child: Padding(
                   padding: const EdgeInsets.all(128.0),
-                  child: NodeEnd(
-                    node: model.targets[0],
+                  child: NodeControl(
+                    nodeModel: model.nodes.elementAt(2),
                   ),
                 ),
               ),
@@ -73,6 +77,32 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       afterLayout(context);
     });
+    NodeEditorModel model =
+        Provider.of<NodeEditorModel>(context, listen: false);
+    model.nodes.add(NodeModel(
+      data: 0,
+      key: GlobalKey(),
+      type: NodeType.Source,
+      painterKey: model.painterKey,
+    ));
+    model.nodes.add(NodeModel(
+      data: 1,
+      key: GlobalKey(),
+      type: NodeType.Source,
+      painterKey: model.painterKey,
+    ));
+    model.nodes.add(NodeModel(
+      data: 2,
+      key: GlobalKey(),
+      type: NodeType.Sink,
+      painterKey: model.painterKey,
+    ));
+    model.nodes.add(NodeModel(
+      data: 3,
+      key: GlobalKey(),
+      type: NodeType.Sink,
+      painterKey: model.painterKey,
+    ));
     super.initState();
   }
 
@@ -86,8 +116,6 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
     NodeEditorModel model =
         Provider.of<NodeEditorModel>(context, listen: false);
     model.updateNodes();
-    model.updateEdges();
-    model.update();
     //print("update");
   }
 

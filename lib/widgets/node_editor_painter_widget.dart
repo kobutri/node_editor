@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:node_editor/models/node_editor_model.dart';
 
+import '../util.dart';
+
 class NodeEditorPainter extends CustomPainter {
   final NodeEditorModel model;
 
@@ -14,17 +16,15 @@ class NodeEditorPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var edge in model.edges.values) {
+    for (var edge in edges(model.nodes)) {
+      Offset start = edge.key.offset +
+          Offset(edge.key.size.width / 2, edge.key.size.height / 2);
+      Offset end = edge.value.offset +
+          Offset(edge.value.size.width / 2, edge.value.size.height / 2);
       Path path = Path()
-        ..moveTo(edge.startOffset.dx, edge.startOffset.dy)
-        ..cubicTo(
-            edge.startOffset.dx +
-                0.6 * (edge.endOffset.dx - edge.startOffset.dx),
-            edge.startOffset.dy,
-            edge.endOffset.dx + 0.6 * (edge.startOffset.dx - edge.endOffset.dx),
-            edge.endOffset.dy,
-            edge.endOffset.dx,
-            edge.endOffset.dy);
+        ..moveTo(start.dx, start.dy)
+        ..cubicTo(start.dx + 0.6 * (end.dx - start.dx), start.dy,
+            end.dx + 0.6 * (start.dx - end.dx), end.dy, end.dx, end.dy);
       canvas.drawPath(path, painter);
     }
   }
