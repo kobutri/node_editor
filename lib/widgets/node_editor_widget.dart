@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 
 import 'canvas_element_target_canvas.dart';
 import 'canvas_node_target_widget.dart';
-import 'element_stack_widget.dart';
 import 'node_editor_painter_widget.dart';
 
 class NodeEditor extends StatefulWidget {
@@ -26,8 +25,6 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
 
     return Consumer<NodeEditorModel>(
       builder: (context, model, _) {
-        Matrix4 inverseTransform =
-            Matrix4.inverted(model.transformationController.value);
         return Stack(
           children: [
             PositionedTapDetector(
@@ -38,34 +35,31 @@ class _NodeEditorState extends State<NodeEditor> with WidgetsBindingObserver {
                 model.elements.add(element);
                 model.update();
               },
-              child: SizedBox.expand(
-                child: InteractiveViewer(
-                  transformationController: model.transformationController,
-                  boundaryMargin: EdgeInsets.all(double.infinity),
-                  minScale: 0.1,
-                  maxScale: 10.0,
-                  child: Stack(
-                    children: [
-                      Transform(
-                        transform: inverseTransform,
-                        child: CanvasNodeTarget(),
-                      ),
-                      Transform(
-                        transform: inverseTransform,
-                        child: CanvasElementTarget(),
-                      ),
-                      IgnorePointer(
-                        child: CustomPaint(
-                          key: model.painterKey,
-                          child: SizedBox.expand(),
-                          painter: NodeEditorPainter(model),
-                          willChange: true,
-                        ),
-                      ),
-                      ElementStack(),
-                    ],
+              child: Stack(
+                children: [
+                  SizedBox.expand(
+                    child: InteractiveViewer(
+                        transformationController:
+                            model.transformationController,
+                        boundaryMargin: EdgeInsets.all(double.infinity),
+                        minScale: 0.1,
+                        maxScale: 10.0,
+                        child: SizedBox.expand()),
                   ),
-                ),
+                  Transform(
+                    transform: model.transformationController.value,
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        key: model.painterKey,
+                        child: SizedBox.expand(),
+                        painter: NodeEditorPainter(model),
+                        willChange: true,
+                      ),
+                    ),
+                  ),
+                  CanvasNodeTarget(),
+                  CanvasElementTarget(),
+                ],
               ),
             ),
           ],

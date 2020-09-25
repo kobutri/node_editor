@@ -15,6 +15,7 @@ class NodeControl extends StatefulWidget {
 
 class _NodeControlState extends State<NodeControl> {
   NodeModel dragModel;
+  NodeEditorModel model;
 
   @override
   void initState() {
@@ -30,9 +31,15 @@ class _NodeControlState extends State<NodeControl> {
 
   @override
   void dispose() {
-    NodeEditorModel model = Provider.of(context, listen: false);
     model.nodes.remove(dragModel);
+    model.nodes.remove(widget.nodeModel);
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    model = Provider.of(context, listen: false);
+    super.didChangeDependencies();
   }
 
   @override

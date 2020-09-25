@@ -3,14 +3,9 @@ import 'package:node_editor/models/element_model.dart';
 import 'package:node_editor/models/node_editor_model.dart';
 import 'package:provider/provider.dart';
 
-class CanvasElementTarget extends StatefulWidget {
-  CanvasElementTarget({Key key}) : super(key: key);
+class CanvasElementTarget extends StatelessWidget {
+  const CanvasElementTarget({Key key}) : super(key: key);
 
-  @override
-  _CanvasElementTargetState createState() => _CanvasElementTargetState();
-}
-
-class _CanvasElementTargetState extends State<CanvasElementTarget> {
   @override
   Widget build(BuildContext context) {
     return Consumer<NodeEditorModel>(
@@ -25,8 +20,11 @@ class _CanvasElementTargetState extends State<CanvasElementTarget> {
           onAccept: (data) {
             RenderBox canvasBox = context.findRenderObject();
             RenderBox elementBox = data.key.currentContext.findRenderObject();
-            Offset off = canvasBox.globalToLocal(model.transformationController
-                .toScene(elementBox.localToGlobal(Offset.zero)));
+            Offset off = model.transformationController.toScene(
+              canvasBox.globalToLocal(
+                elementBox.localToGlobal(Offset.zero),
+              ),
+            );
             data.offset = off;
             model.updateNodes();
             model.update();

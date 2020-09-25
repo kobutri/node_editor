@@ -9,7 +9,6 @@ class Node extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //print("build node");
     return Container(
       width: 20,
       height: 20,
